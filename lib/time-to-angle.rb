@@ -10,7 +10,13 @@ end
 def hour_angle(hour)
   # if the hour is greater than 6, subtract from 12
   # this is so we can return an angle for 9 as 90 not 270
-  hour = (hour > 6) ? (12 - hour) : hour
+  if hour > 6 && hour <= 12
+    hour = 12 - hour
+  elsif hour > 12
+    hour = hour - 12
+    # recursively call the method to return a value of 0..6
+    return hour_angle(hour)
+  end
   # multiply the hour by 30 to get the angle
   # 6 * 30 = 180
   # 3 * 30 = 90
@@ -21,7 +27,13 @@ end
 def minute_angle(minute)
   # if the minute is greater than 30 (half hour), subtract from 60 (full hour)
   # this is so we can return 0 - 90 for minutes 31 - 60
-  minute = (minute > 30) ? (60 - minute) : minute
+  # minute = (minute > 30) ? (60 - minute) : minute
+  if minute > 30 && minute <= 60
+    minute = 60 - minute
+  elsif minute > 60
+    minute = minute - 60
+    return minute_angle(minute)
+  end
   # multiply the minute by 6 to get the angle
   # 30 * 6 = 180
   # 15 * 6 = 90
@@ -37,7 +49,6 @@ def time_as_angle(hour, minute)
   # -34.56.abs = 34.56
   angle.abs
 end
-
 
 puts "Enter a time:"
 time = gets.chomp
