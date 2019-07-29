@@ -1,0 +1,2 @@
+class RideRepeater < ApplicationRecord
+end

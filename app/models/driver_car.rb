@@ -1,0 +1,2 @@
+class DriverCar < ApplicationRecord
+end

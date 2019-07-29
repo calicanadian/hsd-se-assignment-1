@@ -1,0 +1,2 @@
+class DriverRide < ApplicationRecord
+end

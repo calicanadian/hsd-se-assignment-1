@@ -1,0 +1,2 @@
+class DriverPhoto < ApplicationRecord
+end

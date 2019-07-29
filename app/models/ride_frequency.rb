@@ -1,0 +1,2 @@
+class RideFrequency < ApplicationRecord
+end
