@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_07_29_163932) do
+ActiveRecord::Schema.define(version: 2019_07_29_165313) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -123,6 +123,13 @@ ActiveRecord::Schema.define(version: 2019_07_29_163932) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "rider_rides", force: :cascade do |t|
+    t.integer "rider_id"
+    t.integer "ride_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "riders", force: :cascade do |t|
     t.string "first_name"
     t.string "last_name"
@@ -135,9 +142,11 @@ ActiveRecord::Schema.define(version: 2019_07_29_163932) do
   end
 
   create_table "rides", force: :cascade do |t|
-    t.decimal "pick_up_location"
-    t.decimal "drop_off_location"
-    t.integer "organizer_id"
+    t.decimal "pick_up_longitude"
+    t.decimal "pick_up_lattitude"
+    t.decimal "drop_off_longitude"
+    t.decimal "drop_off_lattitude"
+    t.integer "user_id"
     t.boolean "is_carpool"
     t.datetime "pick_up_time"
     t.datetime "created_at", null: false
@@ -147,6 +156,13 @@ ActiveRecord::Schema.define(version: 2019_07_29_163932) do
   create_table "user_photos", force: :cascade do |t|
     t.integer "user_id"
     t.integer "photo_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "user_riders", force: :cascade do |t|
+    t.integer "user_id"
+    t.integer "rider_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
