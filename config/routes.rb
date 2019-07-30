@@ -17,7 +17,7 @@ Rails.application.routes.draw do
   post "/users/:id/rides", to: 'rides#create'
   patch "/users/:id/rides/:ride_id", to: 'rides#update'
   delete "/users/:id/rides/:ride_id", to: 'rides#destroy'
-  
+
   resources :friendships
   resources :drivers do
     resources :driver_cars
@@ -28,6 +28,8 @@ Rails.application.routes.draw do
     resources :rider_rides
   end
   resources :ride_repeaters
+  post "/edit_series", to: 'ride_repeaters#get_series_for_edit'
+  delete "/cancel_series", to: 'ride_repeaters#cancel_series'
   resources :ride_frequencies
   resources :ride_repeater_frequencies
   resources :photos

@@ -12,7 +12,6 @@ class RidesController < ApplicationController
   end
 
   def show
-    # @ride = @user.rides.where(id: params[:ride_id]).first
     @riders = []
     rider_array = params[:riders].gsub(/\\"|\[|\]/, "").split(",")
     rider_array.each do |r|

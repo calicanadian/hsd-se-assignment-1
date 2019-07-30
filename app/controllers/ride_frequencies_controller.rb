@@ -1,0 +1,3 @@
+class RideFrequenciesController < ApplicationController
+  
+end
