@@ -20,12 +20,12 @@ To execute the tests written for this program, execute the following from a loca
 
 
 #Question 2:
-Q2.1: Write out the database schema that you would design for repeating rides. Include table names, column names, column types, and a brief description of each column.
-Answer: I have written out my schema in the `/db/schema.rb` file. In this file I have explained the different tables and how they will be used together to accomplish the expected result. Also within this file I have written a brief description of each data base column in each table.
+##Q2.1: Write out the database schema that you would design for repeating rides. Include table names, column names, column types, and a brief description of each column.
+##Answer: I have written out my schema in the `/db/schema.rb` file. In this file I have explained the different tables and how they will be used together to accomplish the expected result. Also within this file I have written a brief description of each data base column in each table.
 
-Q2.2: Describe the routes, controller(s), and models you would implement.
+##Q2.2: Describe the routes, controller(s), and models you would implement.
 
-Routes:
+#Routes:
 Add Rider endpoint
 `POST /users/:id/riders`  
 Remove Rider endpoint
@@ -53,8 +53,8 @@ Update ride repeaters (one, many, or all)
 Cancel ride repeaters (one, many, or all)
 `DELETE /cancel_series`
 
-Controllers:
-#RideRepeaters Controller
+#Controllers:
+##RideRepeaters Controller
 Create action - Renders a JSON response with details about created ride repeater
 `{
     "ride_repeater": {
@@ -140,7 +140,7 @@ Destroy Action - Renders a JSON response with success message
 }`
 
 
-#Users Controller
+##Users Controller
 Show action - Renders a JSON response with the user object
 `{
     "user": {
@@ -195,7 +195,7 @@ Remove Rider action - Renders JSON response with success message
     "message": "Rider Removed from Account"
 }`
 
-#Rides Controller
+##Rides Controller
 Index action - Renders a JSON response with details of all rides for a User
 `{
     "data": {
@@ -245,6 +245,25 @@ Show action - Renders a JSON response with details about one ride
           "created_at": "2019-07-29T20:23:35.113Z",
           "updated_at": "2019-07-29T20:23:35.113Z"
       }
+    }
+}`
+
+Create action - Renders a JSON response with details of the new Ride.
+`{
+    "data": {
+        "user_id": 5,
+        "ride": {
+            "id": 279,
+            "pick_up_longitude": "34.01166",
+            "pick_up_lattitude": "-118.495823",
+            "drop_off_longitude": "34.046798",
+            "drop_off_lattitude": "-118.485013",
+            "user_id": 5,
+            "is_carpool": false,
+            "pick_up_time": "2019-08-01T20:18:51.000Z",
+            "created_at": "2019-07-30T22:45:33.465Z",
+            "updated_at": "2019-07-30T22:45:33.465Z"
+        }
     }
 }`
 
@@ -450,7 +469,7 @@ Relationship associations
 `has_one :driver_car`
 `belongs_to :driver`
 Model method get_valid_car takes driver object as an argument. Looks for the car associated to the driver where
-an insurance provider is listed, there is a registration year and month listed and the registration does not expire for 
+an insurance provider is listed, there is a registration year and month listed and the registration does not expire for
 at least 30 days. This will return the car make, model, color, year, and number of seats available
 `def get_valid_car(driver)
   select("cars.make, cars.model, cars.color, cars.year, cars.number_of_seats")
@@ -461,3 +480,198 @@ at least 30 days. This will return the car make, model, color, year, and number 
       AND cars.registration_expiration IS NOT NULL)
     AND (TO_CHAR((cars.registration_expiration - interval '8 hour'), 'YYYY-MM-DD HH:MI AM PST') > TO_CHAR((NOW() + interval '30 day'), 'YYYY-MM-DD HH:MI AM PST'))")
 end`
+
+Q2.3: Write request/response documentation for how a mobile client might create, edit, and cancel a set of repeating rides.
+
+Answer:
+
+Step 1: Add a Ride
+
+`curl --location --request POST "http://localhost:3000/users/5/rides?ride%5Bpick_up_longitude%5D=34.011660&ride%5Bpick_up_lattitude%5D=-118.495823&ride%5Bdrop_off_longitude%5D=34.046798&ride%5Bdrop_off_lattitude%5D=-118.485013&ride%5Bis_carpool%5D=false&ride%5Bpick_up_time%5D=Thu,%201%20Aug%202019%2013:18:51%20-0700&riders=%5B2%5D"
+`
+Request Method: POST
+PARAMS
+`ride[pick_up_longitude]       34.011660`
+`ride[pick_up_lattitude]       -118.495823`
+`ride[drop_off_longitude]      34.046798`
+`ride[drop_off_lattitude]      -118.485013`
+`ride[is_carpool]              false`
+`ride[pick_up_time]            Thu, 1 Aug 2019 13:18:51 -0700`
+`riders[2]`
+Response:
+`{
+    "data": {
+        "user_id": 5,
+        "ride": {
+            "id": 279,
+            "pick_up_longitude": "34.01166",
+            "pick_up_lattitude": "-118.495823",
+            "drop_off_longitude": "34.046798",
+            "drop_off_lattitude": "-118.485013",
+            "user_id": 5,
+            "is_carpool": false,
+            "pick_up_time": "2019-08-01T20:18:51.000Z",
+            "created_at": "2019-07-30T22:45:33.465Z",
+            "updated_at": "2019-07-30T22:45:33.465Z"
+        }
+    }
+}`
+The create action calls the `set_ride_for_rider` method on the `RiderRide` model passing in the `@ride` instance variable and the ids of the `riders` parameter as arguements.
+
+Step 2: Create Repeating Rides
+
+`curl --location --request POST "http://localhost:3000/ride_repeaters?ride_repeater%5Bride_id%5D=13&ride_repeater%5Bride_frequency_id%5D=1&ride_repeater%5Bname%5D=Repeater%20Test%20Gamma&ride_repeater%5Bdescription%5D=The%20third%20test%20of%20the%20repeater%20API%20endpoint&ride_repeater%5Bstart_date%5D=Wed,%2031%20Jul%202019%2018:17:17%20-0700&ride_repeater%5Bend_date%5D=Fri,%2031%20Jul%202020%2018:17:17%20-0700"
+`
+Request Method: POST
+PARAMS
+`ride_repeater[ride_id]            13`
+`ride_repeater[ride_frequency_id]  1`
+`ride_repeater[name]               Repeater Test Alpha`
+`ride_repeater[description]        The first test of the repeater API endpoint`
+`ride_repeater[start_date]         Wed, 31 Jul 2019 18:17:17 -0700`
+`ride_repeater[end_date]           Fri, 31 Jul 2020 18:17:17 -0700`
+Response:
+`{
+    "ride_repeater": {
+        "id": 20,
+        "ride_id": 150,
+        "ride_frequency_id": 1,
+        "name": "Repeater Test Gamma",
+        "description": "The third test of the repeater API endpoint",
+        "start_date": "2019-08-01T01:17:17.000Z",
+        "end_date": "2020-08-01T01:17:17.000Z",
+        "created_at": "2019-07-30T22:52:39.619Z",
+        "updated_at": "2019-07-30T22:52:39.619Z"
+    }
+}`
+The `RideRepeater` Model has an after create method to create the repeating rides based on the `RideFrequency` ID referenced in the parameters.
+
+Step 3: Update Repeating Rides
+
+`curl --location --request POST "http://localhost:3000/edit_series?series=%5B182,183,184,185%5D&is_carpool=true&pick_up_time=Tue,%2030%20Jul%202019%2010:15:18%20-0700&user_id=5"
+`
+Request Method: POST
+PARAMS
+`series                          [182,183,184,185]`
+`is_carpool                      true`
+`pick_up_time                    Tue, 30 Jul 2019 10:15:18 -0700`
+`user_id                         5`
+Response:
+`{
+    "message": "Rides updated!",
+    "data": [
+        [
+            {
+                "ride": {
+                    "id": 182,
+                    "user_id": 5,
+                    "is_carpool": true,
+                    "pick_up_time": "2019-07-30T17:15:18.000Z",
+                    "pick_up_longitude": "34.01166",
+                    "pick_up_lattitude": "-118.495823",
+                    "drop_off_longitude": "34.046798",
+                    "drop_off_lattitude": "-118.485013",
+                    "created_at": "2019-07-30T01:39:55.011Z",
+                    "updated_at": "2019-07-30T21:32:07.514Z"
+                },
+                "riders": null
+            }
+        ],
+        [
+            {
+                "ride": {
+                    "id": 183,
+                    "user_id": 5,
+                    "is_carpool": true,
+                    "pick_up_time": "2019-07-30T17:15:18.000Z",
+                    "pick_up_longitude": "34.01166",
+                    "pick_up_lattitude": "-118.495823",
+                    "drop_off_longitude": "34.046798",
+                    "drop_off_lattitude": "-118.485013",
+                    "created_at": "2019-07-30T01:39:55.016Z",
+                    "updated_at": "2019-07-30T21:32:07.558Z"
+                },
+                "riders": null
+            }
+        ],
+        [
+            {
+                "ride": {
+                    "id": 184,
+                    "user_id": 5,
+                    "is_carpool": true,
+                    "pick_up_time": "2019-07-30T17:15:18.000Z",
+                    "pick_up_longitude": "34.01166",
+                    "pick_up_lattitude": "-118.495823",
+                    "drop_off_longitude": "34.046798",
+                    "drop_off_lattitude": "-118.485013",
+                    "created_at": "2019-07-30T01:39:55.021Z",
+                    "updated_at": "2019-07-30T21:32:07.562Z"
+                },
+                "riders": null
+            }
+        ],
+        [
+            {
+                "ride": {
+                    "id": 185,
+                    "user_id": 5,
+                    "is_carpool": true,
+                    "pick_up_time": "2019-07-30T17:15:18.000Z",
+                    "pick_up_longitude": "34.01166",
+                    "pick_up_lattitude": "-118.495823",
+                    "drop_off_longitude": "34.046798",
+                    "drop_off_lattitude": "-118.485013",
+                    "created_at": "2019-07-30T01:39:55.026Z",
+                    "updated_at": "2019-07-30T21:32:07.565Z"
+                },
+                "riders": null
+            }
+        ]
+    ]
+}`
+
+In a before action the `RideRepeatersController` `get_series_for_edit` action calls the `get_series` method on `RideRepeaterFrequency` model, passing in the ride IDs as an argument. The collection is then used to look up each ride object and update the parameters passed in the request on each ride uniformly.
+
+Step 4: Cancel Repeating Rides
+
+`curl --location --request DELETE "http://localhost:3000/cancel_series?series=%5B182,%20187,%20184,%20183%5D"`
+Request Method: DELETE
+PARAMS
+`series                        [182, 183, 184, 185]`
+In a before action the `RideRepeatersController` `cancel_series` action calls the `get_series` method on `RideRepeaterFrequency` model, passing in the ride IDs from the `series` parameter in the request. It then looks up each `Ride` with the information returned in the collection and destroys the `Ride` record.
+
+
+Q2.4: Provide edge cases and how you would test them
+
+Answer:
+
+Creating Repeating Rides: The method would need to be updated initially to accept a date range. Then it would need to calculate the number of weeks between the start date and the end date so it will only create the necessary number of rides based on the available number of weeks in the range. Otherwise it is going to assume that the rides should repeat for a total of 1 year.
+##How to test:
+Write tests that set the start and end dates in the range at the beginning of the month and end of the month. Expect the number of weeks to equal 4. Expect the number of Rides increased by 4 unless the repeating frequency is bi-weekly, then it should only increase by 2.
+
+What happens if there is already a ride scheduled for a day and time that falls in a repeating series? Obviously this should silently fail and possibly notify the user via an email message.
+##How to test:
+We should expect that if a repeating ride is set up on a Wednesday for weekly repetition, if the same ride is used for bi-weekly repetition, it should not save the second set of repeating rides, and instead return a message to the user indicating that there are already rides scheduled on their account that conflict with the recently requested rides.
+
+Editing Repeating Rides:
+User error could cause unwanted consequences. A user could edit a ride and accidentally set the pick up or drop off point to an undesired location. We should have historical records kept of rides for their lifecycle.
+
+##How to test:
+Set up an archiving system for Rides. When a ride is updated, it should instead duplicate and archive the original. This way if a user were to unintentionally edit a ride or repeating ride, they could easily revert their changes.
+
+Cancelling Repeating Rides:
+Similar to the problem with Editing Rides, if we create an archiving system, users could delete and revive rides and repeating rides. This way if they unintentionally destroy an entire repeating ride schedule, it would not be difficult for them to restore the repeating rides on their own.
+
+
+Q2.5: Provide performance challenges and how you would address them
+
+Answer:
+##Hardware
+- The number one factor to consider is Signal Strength. The application would need some sort of offline support so that in the event that the user loses signal, their changes will be stored in memory until they are back in a strong signal area.
+##Memory and Garbage Collection
+- The number two issue would be memory and garbage collection. Looking up and storing cached collections of data would fill up the available memory quickly. Precautions would need to be taken to ensure that the level of used up memory doesn't scale quickly.
+##Accumulation
+- As users continue to use the system, they will accumulate more historical data. If we attempt to display too much of the historical data to the user, they will have a bad experience. All data should be retrieved in an on-demand basis. Using a front end framework like React, Vue, or Angular would allow for small packets of data to be requested often rather than large collections of data retrieved at once. Pagination would also help cut down on the size of data to be retrieved and displayed.
+##Response Bloat
+- The use of intelligently structured SQL queries (or PostgreSQL queries) would return only the data necessary for consumption. In addition the use of Serializers in the responses from the API endpoints would cut down on response bloat. For example, if we are looking up the pick up, drop off locations and the pick up time, we obviously don't need to know about when the record was created or updated last.  
